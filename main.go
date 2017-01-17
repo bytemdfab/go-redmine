@@ -42,6 +42,13 @@ type User struct {
 	LastLoginOn string `json:"last_login_on"`
 }
 
+// Group represents a Redmine group
+type Group struct {
+	Name string `json:"name,omitempty"`
+	Id   int    `json:"id,omitempty"`
+	CustomFields []ValueField `json:"custom_fields,omitempty"`
+}
+
 // Project represents a Redmine project.
 type Project struct {
 	CreatedOn   string `json:"created_on"`
@@ -187,6 +194,29 @@ func (session *Session) GetUser() (user User, err error) {
 
 	user = u.User
 	return
+}
+
+// GetGroups returns an array of all Redmine groups including custom fields values
+func (session *Session) GetGroups() ([]Group, error) {
+
+	data, err := session.get("/groups.json", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var list struct {
+		Groups []Group `json:"groups"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if err := dec.Decode(&list); err != nil {
+		return nil, err
+	}
+
+	var groups []Group
+	groups = append(groups, list.Groups...)
+
+	return groups, nil
 }
 
 // GetIssues returns an array of all open issues assigned to the Session user.
