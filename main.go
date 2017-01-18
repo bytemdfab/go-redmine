@@ -46,8 +46,9 @@ type User struct {
 
 // Group represents a Redmine group
 type Group struct {
-	Name string `json:"name,omitempty"`
-	Id   int    `json:"id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Id           int    `json:"id,omitempty"`
+	UserIds      []int  `json:"user_ids"`
 	CustomFields []ValueField `json:"custom_fields,omitempty"`
 }
 
@@ -61,7 +62,7 @@ type Project struct {
 	UpdatedOn   string `json:"updated_on"`
 }
 
-// Issue represents a single issue in Redmine.
+// Group represents a single issue in Redmine.
 type Issue struct {
 	AssignedTo     Identifier   `json:"assigned_to,omitempty"`
 	Author         Identifier   `json:"author,omitempty"`
@@ -270,6 +271,24 @@ func (session *Session) GetGroups() ([]Group, error) {
 	groups = append(groups, list.Groups...)
 
 	return groups, nil
+}
+
+// GetGroup returns a specific group
+func (session *Session) GetGroup(groupId int) (group Group, err error) {
+	var data []byte
+	if data, err = session.get("/groups/"+strconv.Itoa(groupId)+".json", nil); err != nil {
+		return
+	}
+
+	var g struct {
+		Group Group `json:"group"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if err = dec.Decode(&g); err != nil {
+		return
+	}
+	group = g.Group
+	return
 }
 
 // CreateGroup creates new Redmine group and returns it
