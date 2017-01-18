@@ -48,7 +48,10 @@ type User struct {
 type Group struct {
 	Name         string `json:"name,omitempty"`
 	Id           int    `json:"id,omitempty"`
-	UserIds      []int  `json:"user_ids"`
+	UserIds      struct {
+		Id   int `json:"id"`
+		Name string `json:"name"`
+	}  `json:"user_ids"`
 	CustomFields []ValueField `json:"custom_fields,omitempty"`
 }
 
@@ -275,8 +278,11 @@ func (session *Session) GetGroups() ([]Group, error) {
 
 // GetGroup returns a specific group
 func (session *Session) GetGroup(groupId int) (group Group, err error) {
+	params := map[string]string{
+		"include": "users",
+	}
 	var data []byte
-	if data, err = session.get("/groups/"+strconv.Itoa(groupId)+".json", nil); err != nil {
+	if data, err = session.get("/groups/"+strconv.Itoa(groupId)+".json", params); err != nil {
 		return
 	}
 
