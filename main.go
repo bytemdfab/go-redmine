@@ -303,6 +303,7 @@ func (session *Session) CreateGroup(groupName string) (newGroup Group, err error
 	return
 }
 
+// AddUserToGroup adds user, specified by userId, to group, specified by groupId
 func (session *Session) AddUserToGroup(userId int, groupId int) (err error) {
 
 	data := map[string]interface{}{
