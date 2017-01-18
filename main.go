@@ -219,7 +219,7 @@ func (session *Session) GetGroups() ([]Group, error) {
 	return groups, nil
 }
 
-func (session *Session) createGroup(groupName string) (newGroup Group, err error) {
+func (session *Session) CreateGroup(groupName string) (newGroup Group, err error) {
 	log.Printf("Creating group %v", groupName)
 
 	group := Group{
