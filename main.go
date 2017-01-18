@@ -219,6 +219,7 @@ func (session *Session) GetGroups() ([]Group, error) {
 	return groups, nil
 }
 
+// CreateGroup creates new Redmine group and returns it
 func (session *Session) CreateGroup(groupName string) (newGroup Group, err error) {
 	log.Printf("Creating group %v", groupName)
 
