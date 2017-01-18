@@ -303,6 +303,16 @@ func (session *Session) CreateGroup(groupName string) (newGroup Group, err error
 	return
 }
 
+func (session *Session) AddUserToGroup(userId int, groupId int) (err error) {
+
+	data := map[string]interface{}{
+		"user_id": strconv.Itoa(userId),
+	}
+	_, err = session.post("/groups/"+strconv.Itoa(groupId)+"/users.json", data)
+
+	return
+}
+
 // GetIssues returns an array of all open issues assigned to the Session user.
 func (session *Session) GetIssues() ([]Issue, error) {
 	params := map[string]string{
