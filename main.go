@@ -38,6 +38,8 @@ type User struct {
 	Id          int    `json:"id"`
 	ApiKey      string `json:"api_key"`
 	Login       string `json:"login"`
+	FirstName   string `json:"firstname"`
+	LastName    string `json:"lastname"`
 	Mail        string `json:"mail"`
 	LastLoginOn string `json:"last_login_on"`
 }
@@ -216,6 +218,34 @@ func (session *Session) GetUser() (user User, err error) {
 	}
 
 	user = u.User
+	return
+}
+
+// CreateUser creates new Redmine user and returns it
+func (session *Session) CreateUser(user User) (newUser User, err error) {
+	log.Printf("Creating user %v", user.Login)
+
+	data := map[string]interface{}{
+		"user": user,
+	}
+	var resp []byte
+
+	resp, err = session.post("/users.json", data)
+	log.Printf("got response: %s", string(resp))
+
+	if err != nil {
+		return
+	}
+
+	var createdUser struct {
+		User User `json:"user"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(resp))
+	if err = dec.Decode(&createdUser); err != nil {
+		return
+	}
+
+	newUser = createdUser.User
 	return
 }
 
