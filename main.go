@@ -177,6 +177,29 @@ func (session *Session) IssueUrl(issue Issue) string {
 	return fmt.Sprintf("%s/issues/%d", session.url, issue.Id)
 }
 
+// GetUsers returns an arary of all Redmine users
+func (session *Session) GetUsers() ([]User, error) {
+
+	data, err := session.get("/users.json", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var list struct {
+		Users []User `json:"users"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if err := dec.Decode(&list); err != nil {
+		return nil, err
+	}
+
+	var users []User
+	users = append(users, list.Users...)
+
+	return users, nil
+}
+
 // GetUser returns account data for the user a Session was created for.
 func (session *Session) GetUser() (user User, err error) {
 	var data []byte
