@@ -219,6 +219,36 @@ func (session *Session) GetGroups() ([]Group, error) {
 	return groups, nil
 }
 
+func (session *Session) createGroup(groupName string) (newGroup Group, err error) {
+	log.Printf("Creating group %v", groupName)
+
+	group := Group{
+		Name: groupName,
+	}
+	data := map[string]interface{}{
+		"group": group,
+	}
+	var resp []byte
+
+	resp, err = session.post("/groups.json", data)
+	log.Printf("got response: %s", string(resp))
+
+	if err != nil {
+		return
+	}
+
+	var createdGroup struct {
+		Group Group `json:"group"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(resp))
+	if err = dec.Decode(&createdGroup); err != nil {
+		return
+	}
+
+	newGroup = createdGroup.Group
+	return
+}
+
 // GetIssues returns an array of all open issues assigned to the Session user.
 func (session *Session) GetIssues() ([]Issue, error) {
 	params := map[string]string{
